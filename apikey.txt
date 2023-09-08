@@ -1,0 +1,7 @@
+RGAPI-7977bab7-ced8-4b8b-9eaa-16eccf801bec
+
+
+
+The apikey from riot def website
+
+https://developer.riotgames.com/ => use this to generate new api at start of testing
