@@ -1,0 +1,5 @@
+invite link: https://discord.com/api/oauth2/authorize?client_id=680057495837999123&permissions=8&scope=bot
+
+bot token: NjgwMDU3NDk1ODM3OTk5MTIz.G1nv3T.bhF_hmfAKJvKMUMiuiomMacDbf-CxyQ5U0FWII
+
+client secret: qqhBGNHBEO7TQhgKrWzVwsHoShZKmHrc
