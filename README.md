@@ -16,7 +16,7 @@ and put it in a text file called "Apikey.txt" and the code will automatically pu
 ## riotapi.py
 THis file contains all the functions related to the riot api to extract information and prepare the data for Kootiepai to send to the server. The file uses an apikey from the riot dev portal, currently the api is the developer api that needs to eb renewed every 24 hours.
 
-## bot.py
+## kootiepai.py
 this file is the script that connects the bot to the discord servers
 
 ## tester.py
