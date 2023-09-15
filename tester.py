@@ -11,5 +11,5 @@ server= "eun1" #check https://developer.riotgames.com/docs/lol#data-dragon_regio
 
 #codes
 
-for k,v in searchsummoner.by_accountID(accountID, server).items():
+for k,v in searchsummoner.by_name(name, server).items():
     print(k,v)
