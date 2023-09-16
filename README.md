@@ -1,5 +1,5 @@
 
-![anime cat greeting](/cat_greeting.jpg)
+![anime cat greeting](/extras/cat_greeting.jpg)
 
 # League status tracker bot
 A status tracker for League of Legends
