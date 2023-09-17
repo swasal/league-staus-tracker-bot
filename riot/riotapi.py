@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 import requests
 
 
+
+
+
 #getting the api from local machine 
 load_dotenv()
 api=getenv("riotAPI")
@@ -35,6 +38,12 @@ class searchsummoner:
         r=requests.get(url, params=payload)
         return r.json()
 
+    def by_puuid(puuid,server):
+        url="https://"+server+".api.riotgames.com/lol/summoner/v4/summoners/by-puuid/"+puuid+"?api_key="+api
+        r=requests.get(url).json()
+        return r
+
+
     def by_accountID(account_ID, server):
 
         payload={"api_key":api}
@@ -46,6 +55,7 @@ class searchsummoner:
 
 
 class summonerStats:
+    region={'br1': 'americas', 'eun1': 'europe', 'euw1': 'europe', 'jp1': 'asia', 'kr': 'asia', 'la1': 'americas', 'la2': 'americas', 'na1': 'americas', 'oc1': 'sea', 'tr1': 'europe', 'ru': 'europe', 'ph2': 'sea', 'sg2': 'sea', 'th2': 'sea', 'tw2': 'sea', 'vn2': 'sea'}
     "used to access the player's profile stats history"
     def highestmastery(id, server):
         """highestmastery(id, server)
@@ -96,30 +106,47 @@ class summonerStats:
                 ranked['solo']['rank']=r[1]['tier']+" "+ r[1]['rank']
                 ranked['solo']['lp']=str(r[1]['leaguePoints'])
 
-
-
         return ranked
 
 
-    def matches():
-        pass
-
+    def matchlist(server, puuid, count=10):
+        region=summonerStats.region
+        url="https://"+region[server.lower()]+".api.riotgames.com/lol/match/v5/matches/by-puuid/"+ puuid +"/ids?start=0&count="+str(count)+"&api_key="+api
+        r=requests.get(url).json()
+        return r
+        
+    
+    def matchdetails(matchid):
+        region=summonerStats.region
+        server=matchid.split("_")[0].lower()
+        url="https://"+region[server]+".api.riotgames.com/lol/match/v5/matches/"+matchid+"?api_key="+api
+        r=requests.get(url).json()
+        return r
+    
+        
 
 
 
 class Spectate:
-    "get live stats on summoner"
+    "INCOMPLETE: get live stats on summoner"
+ 
 
 
 
+# testing codes here
+# z=summonerStats.matchlist("eun1", "-uzcGyaoBjG7k3fGrHB8Bttg3lTsXaAa7N0U0H89D5wbWqxQjdkW_G_5LiVCY5N8mf_vQjGdwfF20g")
 
-# # testing codes here
-# z=summonerStats.rank("XdhH7yDClPMA-H7BqTVxxV-QOsg4_fIhieMHAufc4LS8xUI","eun1")
-# # # for k,v in z.items():
-# # #     print(k,"  ", v)
-# print(z)
-# print(z['flex']['rank'])
+# z=summonerStats.matchdetails("EUN1_3455754572")
+# r['info']['participants']
+# print(z['info']['participants'][3]['item6'])
+# print(datadragon)
+# out=""
+# for i in range(0,6):
+#     out+=datadragon.gameconstants.itemsname(z['info']['participants'][3][f'item{i}'])+"\n"
 
+# print(out)
+# print(type(out))
 
-
-
+# # # a=datetime.datetime.fromtimestamp(1694755285911)
+# # # z['gameCreation']=a
+# # # print(a)

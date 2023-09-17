@@ -19,7 +19,7 @@ def run():
 
     @bot.event
     async def on_ready():
-        print("Kootiepai is loading extensions.... ~ <3")
+        print("Kootiepai is loading extensions.... ~ <3\n PS U DIDNT FIX THE ISSUE WITH THE ITEMS IN LEAGUE HOSTORY <3")
         for filename in os.listdir("./cogs"):
             print(filename)
             if filename.endswith(".py") and filename != "__init__.py":

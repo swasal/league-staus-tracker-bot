@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-
+import datetime
 import riot.riotapi as riotapi
 import riot.datadragon as datadragon
 
@@ -22,6 +22,59 @@ class leaguefn:
         return summ
 
 
+    def matchsummary(matchid, puuid):
+        r=riotapi.summonerStats.matchdetails(matchid)
+        puuidlist=r['metadata']['participants'] #puuid
+        output={} #, 'win':None, 'player':None}
+        index=puuidlist.index(puuid)
+        player= r['info']['participants'][index]
+        output['gameid']=r['metadata']['matchId']
+        output['gameCreation']=datetime.datetime.fromtimestamp((r['info']['gameCreation'])/1000)
+        output['gameDuration']=round(r['info']['gameDuration']/60,2)
+        output['mapname']=datadragon.gameconstants.mapname(r['info']['mapId'])
+        output['name']=player['summonerName']
+        output['kda']=str(player['kills'])+"/"+str(player['deaths'])+"/"+str(player['assists'])
+        output['damage']=player['totalDamageDealt']
+        output['gold']=player['goldEarned']
+        output['championName']=player['championName']
+        #neutralMinionsKilled=jungle; totalMinionsKilled=laneminions
+        output['cs']=player['neutralMinionsKilled']+player['totalMinionsKilled']+player['wardsKilled']
+
+        #appending all items in a string[exceeds embed space]
+        output['items']=""        
+        #appending items
+        for i in range(0,6):
+            output['items']+=f"{datadragon.gameconstants.itemsname(player['item'+str(i)])}\n"
+
+        output['items']=output['items'][0:-2]
+
+
+        #setting win and color
+        if player['win']==True:
+            output['status']="Victory"
+            output['color']="#55EC10"
+        else:
+            output['status']="Defeat"
+            output['color']="#F1140E"
+
+        #checking que type to add to mapname
+        q= r['info']['queueId']
+        if q == 0:
+            output['mapname']+=" [Custom]"
+        elif q in [4, 420]:
+            output['mapname']+=" [Ranked SOLO]"
+        elif q in [9, 440]:
+            output['mapname']+=" [Ranked Flex]"
+        else:
+            output['mapname']+=" [Normal]"
+
+        output['name']=player['summonerName']
+
+        return output
+
+
+
+
 #the cog for kootiepai
 class League(commands.Cog):
     "the cog for kootiepai"
@@ -37,7 +90,7 @@ class League(commands.Cog):
         summonerdetails=leaguefn.profile(server, summoner)     
 
         embed = discord.Embed(
-            colour=discord.Colour.dark_teal(), 
+            colour=discord.Colour.from_str("#A522E7"), 
             description=f"Sumonner level: {summonerdetails['summonerLevel']}", 
             title=f"The profile for {summonerdetails['name']}" #set it to name of player
         )
@@ -65,7 +118,42 @@ class League(commands.Cog):
     async def leaguehistory(self, ctx, server: str, *summonername: str):
         server=server.lower()
         summoner=" ".join(summonername).lower()
-        # matches=
+        puuid=riotapi.searchsummoner.by_name(summoner, server)['puuid']
+
+        matches=riotapi.summonerStats.matchlist(server, puuid, 5)
+
+        embeds={}
+
+        for i in range(len(matches)):
+            embeds[i]=None
+
+
+
+        for i in range(len(matches)):
+            match=matches[i]
+            summary=leaguefn.matchsummary(match, puuid)
+
+            embed = discord.Embed(
+            colour=discord.Color.from_str(summary['color']),
+            title=f"{summary['name']} • {summary['status']}",
+            # description=f"Items:\n{summary['items']}",
+            url=f"https://www.google.com/search?q={summary['status']}+meaning")          
+
+            embed.set_thumbnail(url=str(datadragon.champion.square(summary['championName']))) #url for champion square icon
+            embed.set_footer(text=f"{summary['gameid']} • {summary['gameCreation']}")
+            embed.add_field(name="Stats", value=f"Champion: {summary['championName']}\nDuration: {summary['gameDuration']}\nKDA: {summary['kda']}\nDamage: {summary['damage']}\nCS: {summary['cs']}\n Gold: {summary['gold']}")
+            embed.add_field(name="Items", value=f"{summary['items']}")
+            embed.add_field(name="", value="................................................................................................................................",inline=False)
+
+            embeds[i]=embed
+        
+        await ctx.send(embed=embeds[0])
+        await ctx.send(embed=embeds[1])
+        await ctx.send(embed=embeds[2])
+        await ctx.send(embed=embeds[3])
+        await ctx.send(embed=embeds[4])
+
+
 
 
 
